@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
@@ -7,20 +6,17 @@ const jwt = require("jsonwebtoken");
 require('dotenv').config();
 const path = require("path");
 
-// pass an (empty) options object to avoid generated-client expectation of an options object
 const { PrismaClient } = require('@prisma/client');
 const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
 const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL || 'file:./dev.db' });
 const prisma = new PrismaClient({ adapter });
 const app = express();
-const SECRET = "supersecretkey"; // use env var in production
+const SECRET = "supersecretkey"; 
 
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Content Security Policy for local development
-// Allow connections to local frontend/backend so DevTools and XHR/fetch work during dev.
 app.use((req, res, next) => {
   const csp = [
     "default-src 'self'",
@@ -33,7 +29,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Multer setup for file uploads
 const uploadsDir = path.join(__dirname, "uploads");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
@@ -41,9 +36,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ---------------- AUTH ROUTES ----------------
-
-// REGISTER
 app.post("/api/register", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -55,7 +47,6 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-// LOGIN
 app.post("/api/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -72,7 +63,6 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// Middleware to protect routes
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: "No token" });
@@ -86,9 +76,6 @@ function authMiddleware(req, res, next) {
   }
 }
 
-// ---------------- CRUD ROUTES ----------------
-
-// CREATE
 app.post(
   "/api/medicine",
   authMiddleware,
@@ -96,7 +83,6 @@ app.post(
   async (req, res) => {
     try {
         const { userName, age, contact, drugName, medicineType } = req.body;
-        // Store public-facing paths (served via express.static('/uploads')) instead of filesystem paths
         const toPublicPath = (p) => {
           if (!p) return null;
           const fname = path.basename(p);
@@ -123,13 +109,11 @@ app.post(
   }
 );
 
-// READ
 app.get("/api/medicine", authMiddleware, async (req, res) => {
   const items = await prisma.medicineItem.findMany();
   res.json(items);
 });
 
-// UPDATE
 app.put(
   "/api/medicine/:id",
   authMiddleware,
@@ -165,7 +149,6 @@ app.put(
   }
 );
 
-// DELETE
 app.delete("/api/medicine/:id", authMiddleware, async (req, res) => {
   try {
     await prisma.medicineItem.delete({ where: { id: parseInt(req.params.id) } });
@@ -175,5 +158,4 @@ app.delete("/api/medicine/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// ---------------- SERVER ----------------
 app.listen(4000, () => console.log("Server running on http://localhost:4000"));

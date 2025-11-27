@@ -6,7 +6,7 @@ export default function Header({ onLogout }) {
   return (
     <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-40 shadow-sm">
       <div className="flex items-center justify-between px-6 py-4">
-        {/* Left: Menu Toggle + Logo */}
+   
         <div className="flex items-center gap-4">
           
           <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
@@ -14,7 +14,6 @@ export default function Header({ onLogout }) {
           </h1>
         </div>
 
-        {/* Right: Theme Toggle + User Menu */}
         <div className="flex items-center gap-4">
 
           {/* User Menu */}

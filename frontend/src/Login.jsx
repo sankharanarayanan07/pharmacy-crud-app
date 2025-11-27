@@ -1,4 +1,4 @@
-// src/Login.js
+
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -15,7 +15,7 @@ export default function Login({ onLogin, onShowSignup }) {
       const res = await axios.post(API, { username, password });
       localStorage.setItem("token", res.data.token);
       setError("");
-      onLogin(); // switch to MedicineApp
+      onLogin(); 
     } catch (err) {
       setError("Invalid credentials. Please try again.");
     }

@@ -7,7 +7,6 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
   const [showSignup, setShowSignup] = useState(false);
   useEffect(() => {
-    // Force dark theme globally (adds Tailwind 'dark' class to <html>)
     document.documentElement.classList.add("dark");
     return () => document.documentElement.classList.remove("dark");
   }, []);
