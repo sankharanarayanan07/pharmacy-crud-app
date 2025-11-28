@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import Input from "./components/Input";
 import Button from "./components/Button";
 
-export default function MedicineApp({ onLogout }) {
+export default function MedicineApp({ onLogout, onNavigate }) {
   const [form, setForm] = useState({
     userName: "",
     age: "",
@@ -115,7 +115,7 @@ export default function MedicineApp({ onLogout }) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header onLogout={onLogout} />
+      <Header onLogout={onLogout} onNavigate={onNavigate} currentPage="inventory" />
 
       <div className="flex flex-1">
 

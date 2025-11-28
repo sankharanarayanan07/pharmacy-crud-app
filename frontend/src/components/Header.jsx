@@ -1,17 +1,42 @@
 import React, { useState } from "react";
 
-export default function Header({ onLogout }) {
+export default function Header({ onLogout, onNavigate, currentPage }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   return (
     <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-40 shadow-sm">
       <div className="flex items-center justify-between px-6 py-4">
    
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-8">
           
-          <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent cursor-pointer" onClick={() => onNavigate && onNavigate("home")}>
              PharmaCare
           </h1>
+
+          {onNavigate && (
+            <nav className="flex gap-6">
+              <button
+                onClick={() => onNavigate("home")}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  currentPage === "home"
+                    ? "text-blue-400 border-b-2 border-blue-400"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                Home
+              </button>
+              <button
+                onClick={() => onNavigate("inventory")}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  currentPage === "inventory"
+                    ? "text-blue-400 border-b-2 border-blue-400"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                Medical Inventory
+              </button>
+            </nav>
+          )}
         </div>
 
         <div className="flex items-center gap-4">
