@@ -8,31 +8,21 @@ const path = require("path");
 
 const { PrismaClient } = require('@prisma/client');
 const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL || 'file:./dev.db' });
-const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL || 'file:./backend/dev.db' });//pointing to db
+const prisma = new PrismaClient({ adapter });//client for db operations
+
 const app = express();
 const SECRET = "supersecretkey"; 
 
-app.use(cors());
-app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(cors());//the browser would block the request due to same-origin policy.
+app.use(express.json()); //Without it, if a client sends json in the request body, req.body would be undefined
 
-app.use((req, res, next) => {
-  const csp = [
-    "default-src 'self'",
-    "connect-src 'self' http://localhost:5174 http://localhost:4000 ws://localhost:5174 ws://localhost:4000",
-    "img-src 'self' data: blob:",
-    "style-src 'self' 'unsafe-inline'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-  ].join('; ');
-  res.setHeader('Content-Security-Policy', csp);
-  next();
-});
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));//it make the uploaded files accessible through /uploads URL path
 
-const uploadsDir = path.join(__dirname, "uploads");
+const uploadsDir = path.join(__dirname, "uploads");//builds the path to your uploads folder
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),//cb->callback to set the filename
 });
 const upload = multer({ storage });
 
@@ -78,18 +68,21 @@ function authMiddleware(req, res, next) {
 
 app.post(
   "/api/medicine",
-  authMiddleware,
+  authMiddleware,//middleware to check it is logged in user
+
   upload.fields([{ name: "profileImage" }, { name: "documentProof" }]),
+
   async (req, res) => {
     try {
         const { userName, age, contact, drugName, medicineType } = req.body;
         const toPublicPath = (p) => {
-          if (!p) return null;
-          const fname = path.basename(p);
-          return `/uploads/${fname}`;
+          if (!p) return null;                // If no path, return null
+          const fname = path.basename(p);     // Extract just the filename from the full path
+          return `/uploads/${fname}`;         // Build a public url pointing to /uploads
         };
-        const profileImage = toPublicPath(req.files["profileImage"]?.[0]?.path) || null;
-        const documentProof = toPublicPath(req.files["documentProof"]?.[0]?.path) || null;
+
+        const profileImage = toPublicPath(req.files["profileImage"]?.[0]?.path) || null; // it gives the public url like /uploads/17012.png
+        const documentProof = toPublicPath(req.files["documentProof"]?.[0]?.path) || null;// it gives the public url like /uploads/mydoc.pdf
 
       const item = await prisma.medicineItem.create({
         data: {

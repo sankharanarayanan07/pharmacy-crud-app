@@ -361,13 +361,7 @@ export default function MedicineApp({ onLogout, onNavigate }) {
                                 >
                                   View
                                 </a>
-                                <a
-                                  href={resolveImageUrl(item.documentProof)}
-                                  download
-                                  className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
-                                >
-                                  Download
-                                </a>
+                                
                               </div>
                             ) : (
                               <span className="text-gray-400 dark:text-gray-500 text-sm">—</span>
